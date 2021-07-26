@@ -1,11 +1,8 @@
 // @flow
 
 import React from 'react'
-import {connect} from 'react-redux'
 import {View} from 'react-native'
 import {SafeAreaView} from 'react-native-safe-area-context'
-import {compose} from 'redux'
-import {withHandlers} from 'recompose'
 import {injectIntl, defineMessages, type IntlShape} from 'react-intl'
 
 import WalletDescription from './WalletDescription'
@@ -15,7 +12,6 @@ import styles from './styles/WalletInitScreen.style'
 import {WALLET_INIT_ROUTES} from '../../RoutesList'
 import {CONFIG, isNightly} from '../../config/config'
 
-import type {State} from '../../state'
 import type {Navigation} from '../../types/navigation'
 import type {NetworkId, WalletImplementationId} from '../../config/types'
 
@@ -33,10 +29,15 @@ const messages = defineMessages({
 type Props = {|
   intl: IntlShape,
   navigation: Navigation,
-  navigateInitWallet: (Object, NetworkId, WalletImplementationId) => mixed,
 |}
 
-const WalletInitScreen = ({intl, navigateInitWallet}: Props) => {
+const WalletInitScreen = ({intl, navigation}: Props) => {
+  const navigateInitWallet = (event: Object, networkId: NetworkId, walletImplementationId: WalletImplementationId) =>
+    navigation.navigate(WALLET_INIT_ROUTES.CREATE_RESTORE_SWITCH, {
+      networkId,
+      walletImplementationId,
+    })
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <StatusBar type="dark" />
@@ -110,17 +111,4 @@ const WalletInitScreen = ({intl, navigateInitWallet}: Props) => {
     </SafeAreaView>
   )
 }
-export default injectIntl(
-  compose(
-    connect((_state: State) => ({})),
-    withHandlers({
-      navigateInitWallet:
-        ({navigation}) =>
-        (event: Object, networkId: NetworkId, walletImplementationId: WalletImplementationId) =>
-          navigation.navigate(WALLET_INIT_ROUTES.CREATE_RESTORE_SWITCH, {
-            networkId,
-            walletImplementationId,
-          }),
-    }),
-  )(WalletInitScreen),
-)
+export default injectIntl(WalletInitScreen)
